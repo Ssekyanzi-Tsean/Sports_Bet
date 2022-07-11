@@ -57,6 +57,12 @@ def handle_games():
         results = [
             {
                 "league": game.league,
+                "home_team": game.home_team,
+                "away_team": game.away_team,
+                "home_team_win_odds": game.home_team_win_odds,
+                "away_team_win_odds": game.away_team_win_odds,
+                "draw_odds": game.draw_odds,
+                "game_date": game.game_date
 
             }for game in bets
         ]
