@@ -1,4 +1,5 @@
-from flask import Flask
+from crypt import methods
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.dialects.postgresql import JSON
@@ -39,11 +40,28 @@ class GamesDb(db.Model):
         return '<id {}'.format(self.id)
 
 
-@app.route('/')
-def hello():
-    return {"Hello : World!"}
+@app.route('/games', methods=['POST', 'GET'])
+def handle_games():
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            new_game = GamesDb(league=data['league'], home_team=data['home_team'], away_team=data['away_team'], home_team_win_odds=data['home_team_win_odds'],
+                               away_team_win_odds=data['away_team_win_odds'], draw_odds=data['draw_odds'], game_date=data['game_date'])
+            db.session.add(new_game)
+            db.session.commit()
+            return {"message": f"game {new_game.home_team} vs {new_game.away_team} has been Created successfully "}
+        else:
+            return {"error": "The Request payload should be in JSON"}
+    elif request.method == 'GET':
+        bets = GamesDb.query, all()
+        results = [
+            {
+                "league": game.league,
 
+            }for game in bets
+        ]
 
+        return{'count': len(results), "games": results}
 # @app.route('/<name>')
 # def hello_name(name):
 #     return "Hello {}!".format(name)
